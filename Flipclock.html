@@ -1,236 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"> <!-- Specifies character encoding for the document -->
-    <title>Split-Flap Clock</title> <!-- Sets the title of the web page -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Links to the FontAwesome library for icons -->
+    <meta charset="UTF-8">
+    <title>Smooth Split-Flap Clock</title>
     <style>
-        /* Basic styling for body and overall theme */
         body {
-            font-family: Arial, sans-serif; /* Default font style */
-            background-color: #121212; /* Dark background color */
-            display: flex; /* Using flexbox to align items */
-            justify-content: center; /* Centering content horizontally */
-            align-items: center; /* Centering content vertically */
-            min-height: 100vh; /* Ensure body takes up full viewport height */
-            margin: 0; /* Removing default margin */
-            transition: background-color 0.3s, color 0.3s; /* Smooth transitions for theme switching */
-        }
-
-        /* Light theme styles */
-        .light-theme {
-            background-color: #f4f4f4; /* Light background */
-            color: #333; /* Dark text */
-        }
-
-        /* Dark theme styles */
-        .dark-theme {
-            background-color: #121212; /* Dark background */
-            color: #fff; /* Light text */
-        }
-
-        /* Styling for the clock container */
-        .clock-container {
-            display: flex; /* Using flexbox for positioning elements */
-            justify-content: center; /* Centering the content */
-            align-items: center; /* Vertical centering */
-            padding: 40px; /* Adding space inside the container */
-            background: rgba(0, 0, 0, 0.6); /* Semi-transparent dark background */
-            border-radius: 20px; /* Rounded corners */
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.6), /* Outer shadow */
-                inset 0 2px 10px rgba(255, 255, 255, 0.1); /* Inner shadow */
-            backdrop-filter: blur(10px); /* Background blur effect */
-        }
-
-        /* Flip clock container */
-        .flip-clock {
-            display: flex; /* Aligning clock components horizontally */
-            gap: 8px; /* Spacing between the clock digits */
-            align-items: center; /* Align vertically */
-        }
-
-        /* Each individual flipper element */
-        .flipper {
-            position: relative;
-            width: 100px; /* Width of the flipper */
-            height: 140px; /* Height of the flipper */
-            background: #111; /* Dark background */
-            border-radius: 8px; /* Rounded corners */
-            box-shadow: 
-                0 4px 8px rgba(0, 0, 0, 0.5), /* Outer shadow */
-                inset 0 2px 1px rgba(255, 255, 255, 0.1); /* Inner shadow */
-            overflow: hidden; /* Hide anything overflowing */
-        }
-
-        /* The number displayed in each flipper */
-        .number {
-            position: absolute;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            display: flex;
-            justify-content: center; /* Centering the number */
-            align-items: center; /* Centering the number vertically */
-            font-size: 120px; /* Large font size */
-            font-weight: bold; /* Bold font */
-            color: #fff; /* White text */
-            background: linear-gradient(180deg, #222 0%, #111 100%); /* Gradient background */
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Shadow for text */
-        }
-
-        /* Split line for the flippers */
-        .split-line {
-            position: absolute;
-            width: 100%; /* Full width */
-            height: 2px; /* Thin line */
-            background: rgba(0, 0, 0, 0.8); /* Dark line color */
-            top: 50%; /* Middle of the flipper */
-            z-index: 2; /* Ensures line appears above the numbers */
-        }
-
-        /* Styling for the flaps in each flipper */
-        .flap {
-            position: absolute;
-            width: 100%;
-            height: 50%; /* Half the height of the flipper */
-            background: linear-gradient(180deg, #222 0%, #111 100%); /* Gradient background */
-            display: flex;
-            justify-content: center;
-            align-items: center; /* Centering the flap */
-            font-size: 120px; /* Large font size */
-            font-weight: bold; /* Bold font */
-            color: #fff; /* White text */
-            transform-origin: bottom; /* Flap rotates from the bottom */
-            backface-visibility: hidden; /* Hide back of flap */
-            transform-style: preserve-3d; /* Keep the 3D transformation */
-            animation-timing-function: ease-in-out; /* Smooth transition for the flip */
-        }
-
-        /* Back flap, rotated 180 degrees */
-        .flap.back {
-            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
-            transform: rotateX(180deg); /* Flip the flap */
-        }
-
-        /* Keyframes for flip animation */
-        @keyframes flip {
-            0% {
-                transform: rotateX(0);
-            }
-            50% {
-                transform: rotateX(90deg);
-            }
-            100% {
-                transform: rotateX(180deg);
-            }
-        }
-
-        /* Colon styling between hours, minutes, and seconds */
-        .colon {
-            font-size: 80px; /* Font size for colon */
-            color: #fff; /* White text */
-            margin: 0 4px; /* Spacing around colon */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Text shadow */
-            animation: pulse 1s infinite; /* Animation for pulsing effect */
-        }
-
-        /* Keyframes for pulsing colon */
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Grouping the elements together (hours, minutes, seconds) */
-        .group {
-            display: flex;
-            gap: 4px; /* Spacing between elements */
-        }
-
-        /* Period (AM/PM) styling */
-        .period {
-            position: absolute;
-            bottom: -30px;
-            right: 0;
-            color: #fff; /* White text */
-            font-size: 24px; /* Font size */
-            font-weight: bold; /* Bold font */
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* Shadow effect */
-            background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-            padding: 4px 12px; /* Padding around text */
-            border-radius: 12px; /* Rounded corners */
-        }
-
-        /* Color wheel for changing font color */
-        .color-wheel,
-        .bg-color-wheel,
-        .font-style-wheel {
-            position: fixed;
-            top: 20px; /* Positioning from top of the screen */
-            left: 20px; /* Positioning from left */
-            z-index: 1000; /* High stacking order */
-            padding: 10px; /* Padding inside the circle */
-            background: rgba(0, 0, 0, 0.6); /* Dark semi-transparent background */
-            border-radius: 50%; /* Circular button */
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8); /* Shadow effect */
+            font-family: Arial, sans-serif;
+            background-color: #121212;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column; /* Stack elements vertically */
+            min-height: 100vh;
+            margin: 0;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* Positions for each color wheel */
-        .bg-color-wheel {
-            top: 80px; /* Slightly lower */
+        .light-theme {
+            background-color: #f4f4f4;
         }
 
-        .font-style-wheel {
-            top: 140px; /* Even lower */
+        .dark-theme {
+            background-color: #121212;
         }
 
-        /* Icons inside the color wheels */
-        .color-wheel i,
-        .bg-color-wheel i,
-        .font-style-wheel i {
-            font-size: 24px; /* Icon size */
-            color: #fff; /* White color */
+        .clock-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
-        /* Labels below the color wheels */
-        .color-wheel span,
-        .bg-color-wheel span,
-        .font-style-wheel span {
-            font-size: 12px; /* Smaller font size */
-            color: #fff; /* White text */
-            margin-top: 5px; /* Spacing from the icon */
+        .flip-clock {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
-        /* Hides the inputs (color pickers, font selector) */
-        .color-wheel input,
-        .bg-color-wheel input,
-        .font-style-wheel select {
-            opacity: 0; /* Hides input */
+        .flipper {
+            position: relative;
+            width: 100px;
+            height: 140px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            perspective: 400px;
+            margin: 0 2px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .card {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            cursor: pointer; /* Pointer cursor on hover */
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            border-radius: 8px;
         }
 
-        /* Theme toggle button styling */
-        .theme-toggle {
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 120px;
+            font-weight: bold;
+            color: #ff4444;
+            background: #1a1a1a;
+            border-radius: 8px;
+        }
+
+        .card-back {
+            transform: rotateX(180deg);
+        }
+
+        .card.flipped {
+            transform: rotateX(-180deg);
+        }
+
+        .colon {
+            font-size: 80px;
+            color: #ff4444;
+            margin: 0 4px;
+        }
+
+        .group {
+            display: flex;
+            gap: 4px;
+        }
+
+        /* Controls */
+        .control-btn {
             position: fixed;
+            width: 48px;
+            height: 48px;
+            background: rgba(80, 80, 80, 0.6);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .control-btn:hover {
+            background: rgba(100, 100, 100, 0.8);
+        }
+
+        #fontControl {
+            top: 20px;
+            left: 20px;
+        }
+
+        #bgControl {
+            top: 80px;
+            left: 20px;
+        }
+
+        #styleControl {
+            top: 140px;
+            left: 20px;
+        }
+
+        #themeToggle {
             top: 20px;
             right: 20px;
-            background-color: #333; /* Dark background for button */
-            color: #fff; /* White text */
-            padding: 10px 20px; /* Padding inside the button */
-            border-radius: 30px; /* Rounded button corners */
-            cursor: pointer; /* Pointer cursor */
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Shadow effect */
-            z-index: 1000; /* High stacking order */
         }
 
-        .theme-toggle:hover {
-            background-color: #444; /* Slightly lighter on hover */
+        .control-icon {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .control-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -238,133 +156,152 @@
     <div class="clock-container">
         <div class="flip-clock">
             <div class="group">
-                <!-- Hour tens and ones -->
                 <div class="flipper hours-tens">
-                    <div class="number">1</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
                 <div class="flipper hours-ones">
-                    <div class="number">2</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="colon">:</div> <!-- Colon between hours and minutes -->
+            <div class="colon">:</div>
             <div class="group">
-                <!-- Minute tens and ones -->
                 <div class="flipper minutes-tens">
-                    <div class="number">0</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
                 <div class="flipper minutes-ones">
-                    <div class="number">0</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="colon">:</div> <!-- Colon between minutes and seconds -->
+            <div class="colon">:</div>
             <div class="group">
-                <!-- Second tens and ones -->
                 <div class="flipper seconds-tens">
-                    <div class="number">0</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
                 <div class="flipper seconds-ones">
-                    <div class="number">0</div>
-                    <div class="split-line"></div>
+                    <div class="card">
+                        <div class="card-face">0</div>
+                        <div class="card-face card-back">0</div>
+                    </div>
                 </div>
             </div>
-            <div class="period">AM</div> <!-- AM/PM indicator -->
         </div>
     </div>
 
-    <!-- Color, background, and font style change wheels -->
-    <div class="color-wheel">
-        <i class="fas fa-font"></i>
-        <input type="color" class="color-picker" id="colorPicker" value="#ffffff">
-        <span>Font</span>
-    </div>
+    <!-- Simplified Controls -->
+    <button class="control-btn" id="fontControl">
+        <input type="color" id="colorPicker" class="control-input" value="#ff4444">
+        <svg class="control-icon" viewBox="0 0 24 24">
+            <path d="M4 7V4h16v3M9 20h6M12 4v16"/>
+        </svg>
+    </button>
 
-    <div class="bg-color-wheel">
-        <i class="fas fa-paint-brush"></i>
-        <input type="color" class="bg-color-picker" id="bgColorPicker" value="#000000">
-        <span>Background</span>
-    </div>
+    <button class="control-btn" id="bgControl">
+        <input type="color" id="bgColorPicker" class="control-input" value="#1a1a1a">
+        <svg class="control-icon" viewBox="0 0 24 24">
+            <path d="M12 19l7-7a5 5 0 00-7-7l-7 7v7h7z"/>
+        </svg>
+    </button>
 
-    <div class="font-style-wheel">
-        <i class="fas fa-text-height"></i>
-        <select id="fontStylePicker">
+    <button class="control-btn" id="styleControl">
+        <select id="fontStylePicker" class="control-input">
             <option value="Arial">Arial</option>
             <option value="Verdana">Verdana</option>
             <option value="Courier New">Courier New</option>
             <option value="Times New Roman">Times New Roman</option>
         </select>
-        <span>Style</span>
-    </div>
+        <svg class="control-icon" viewBox="0 0 24 24">
+            <path d="M6 4h8M6 8h8M6 12h8"/>
+        </svg>
+    </button>
 
-    <button class="theme-toggle" id="themeToggle">Toggle Theme</button> <!-- Theme toggle button -->
+    <button class="control-btn" id="themeToggle">
+        <svg class="control-icon" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2m0 16v2m-8-12H2m20 0h-2"/>
+        </svg>
+    </button>
 
     <script>
-        // JavaScript for clock functionality, theme toggle, and customization features
+        function updateFlipper(flipper, newValue) {
+            const card = flipper.querySelector('.card');
+            const front = card.querySelector('.card-face');
+            const back = card.querySelector('.card-face.card-back');
+            
+            if (front.textContent !== newValue) {
+                back.textContent = newValue;
+                card.classList.add('flipped');
+                
+                setTimeout(() => {
+                    front.textContent = newValue;
+                    card.classList.remove('flipped');
+                }, 600);
+            }
+        }
 
-        // Toggle between light and dark themes
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            const hourStr = hours.toString().padStart(2, '0');
+            const minStr = minutes.toString().padStart(2, '0');
+            const secStr = seconds.toString().padStart(2, '0');
+
+            updateFlipper(document.querySelector('.hours-tens'), hourStr[0]);
+            updateFlipper(document.querySelector('.hours-ones'), hourStr[1]);
+            updateFlipper(document.querySelector('.minutes-tens'), minStr[0]);
+            updateFlipper(document.querySelector('.minutes-ones'), minStr[1]);
+            updateFlipper(document.querySelector('.seconds-tens'), secStr[0]);
+            updateFlipper(document.querySelector('.seconds-ones'), secStr[1]);
+        }
+
+        // Initialize clock
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // Control handlers
         document.getElementById('themeToggle').addEventListener('click', function() {
-            const body = document.body;
-            body.classList.toggle('dark-theme');
-            body.classList.toggle('light-theme');
+            document.body.classList.toggle('dark-theme');
+            document.body.classList.toggle('light-theme');
         });
 
-        // Change font color based on color picker input
         document.getElementById('colorPicker').addEventListener('input', function(event) {
             const color = event.target.value;
-            document.querySelectorAll('.number').forEach(function(element) {
-                element.style.color = color;
+            document.querySelectorAll('.card-face, .colon').forEach(el => {
+                el.style.color = color;
             });
-            document.querySelectorAll('.colon').forEach(function(element) {
-                element.style.color = color;
-            });
-            document.querySelector('.period').style.color = color;
         });
 
-        // Change background color based on color picker input
         document.getElementById('bgColorPicker').addEventListener('input', function(event) {
             const color = event.target.value;
             document.querySelector('.clock-container').style.backgroundColor = color;
         });
 
-        // Change font style based on the selected font style
         document.getElementById('fontStylePicker').addEventListener('change', function(event) {
             const fontStyle = event.target.value;
-            document.querySelectorAll('.number').forEach(function(element) {
-                element.style.fontFamily = fontStyle;
-            });
-            document.querySelectorAll('.colon').forEach(function(element) {
-                element.style.fontFamily = fontStyle;
+            document.querySelectorAll('.card-face').forEach(el => {
+                el.style.fontFamily = fontStyle;
             });
         });
-
-        // Update the clock every second
-        function updateClock() {
-            const now = new Date();
-            let hours = now.getHours();
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            const isAM = hours < 12;
-
-            hours = hours % 12;
-            hours = hours ? hours : 12;
-            hours = hours.toString().padStart(2, '0');
-
-            const period = isAM ? 'AM' : 'PM';
-
-            document.querySelector('.hours-tens .number').textContent = hours[0];
-            document.querySelector('.hours-ones .number').textContent = hours[1];
-            document.querySelector('.minutes-tens .number').textContent = minutes[0];
-            document.querySelector('.minutes-ones .number').textContent = minutes[1];
-            document.querySelector('.seconds-tens .number').textContent = seconds[0];
-            document.querySelector('.seconds-ones .number').textContent = seconds[1];
-            document.querySelector('.period').textContent = period;
-        }
-
-        setInterval(updateClock, 1000); // Update the clock every second
     </script>
 </body>
 </html>
