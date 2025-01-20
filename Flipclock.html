@@ -146,7 +146,8 @@
         }
 
         .color-wheel,
-        .bg-color-wheel {
+        .bg-color-wheel,
+        .font-style-wheel {
             position: fixed;
             top: 20px;
             left: 20px;
@@ -165,21 +166,28 @@
             top: 80px;
         }
 
+        .font-style-wheel {
+            top: 140px;
+        }
+
         .color-wheel i,
-        .bg-color-wheel i {
+        .bg-color-wheel i,
+        .font-style-wheel i {
             font-size: 24px;
             color: #fff;
         }
 
         .color-wheel span,
-        .bg-color-wheel span {
+        .bg-color-wheel span,
+        .font-style-wheel span {
             font-size: 12px;
             color: #fff;
             margin-top: 5px;
         }
 
         .color-wheel input,
-        .bg-color-wheel input {
+        .bg-color-wheel input,
+        .font-style-wheel select {
             opacity: 0;
             position: absolute;
             width: 50px;
@@ -253,7 +261,18 @@
     <div class="bg-color-wheel">
         <i class="fas fa-paint-brush"></i>
         <input type="color" class="bg-color-picker" id="bgColorPicker" value="#000000">
-        <span>Block</span>
+        <span>Background</span>
+    </div>
+
+    <div class="font-style-wheel">
+        <i class="fas fa-text-height"></i>
+        <select id="fontStylePicker">
+            <option value="Arial">Arial</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Times New Roman">Times New Roman</option>
+        </select>
+        <span>Style</span>
     </div>
 
     <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
@@ -279,6 +298,16 @@
         document.getElementById('bgColorPicker').addEventListener('input', function(event) {
             const color = event.target.value;
             document.querySelector('.clock-container').style.backgroundColor = color;
+        });
+
+        document.getElementById('fontStylePicker').addEventListener('change', function(event) {
+            const fontStyle = event.target.value;
+            document.querySelectorAll('.number').forEach(function(element) {
+                element.style.fontFamily = fontStyle;
+            });
+            document.querySelectorAll('.colon').forEach(function(element) {
+                element.style.fontFamily = fontStyle;
+            });
         });
 
         function updateClock() {
